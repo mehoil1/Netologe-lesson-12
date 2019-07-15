@@ -1,0 +1,34 @@
+import requests
+
+TOKEN = '79b480814a41694ff63bb97c738701c3e7ad753189cd14a10c6e3688a77b273ad980d6c03630e154fa7b3'
+
+class User:
+    def __init__(self, token):
+        self.token = token
+
+    def get_params(self, target_uid, source_uid):
+        return {
+            'access_token': self.token,
+            'v': '5.52',
+            'source_uid': target_uid,
+            'target_uid': source_uid,
+        }
+
+    def request(self, method, params):
+        response = requests.get(
+            'https://api.vk.com/method/users.get' + method,
+            params=params
+        )
+        return response
+
+    def mutual_friends(self, target_uid, source_uid):
+        params = self.get_params(target_uid, source_uid)
+        response = self.request(
+            'friends.getMutual',
+            params=params
+        )
+        return response.json()['response']
+
+mikhail = User(TOKEN)
+friends = mikhail.mutual_friends(source_uid=1317329, target_uid=4327520)
+print(friends)
